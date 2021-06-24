@@ -51,7 +51,7 @@ func (s *tidbCollectServer) ReportSQLMeta(stream tidbpb.TopSQLAgent_ReportSQLMet
 
 		if len(req.SqlDigest) > 0 {
 			statsDigests += 1
-			digestRegistry.LinkPlan(hex.EncodeToString(req.SqlDigest), req.NormalizedSql)
+			digestRegistry.LinkSQL(hex.EncodeToString(req.SqlDigest), req.NormalizedSql)
 		}
 	}
 

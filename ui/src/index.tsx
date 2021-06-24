@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import "uplot/dist/uPlot.min.css";
+import "@elastic/charts/dist/theme_light.css";
 import App from "./App";
 import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
