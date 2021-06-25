@@ -11,9 +11,11 @@ import (
 	"strconv"
 	"time"
 
-	"topsqlMockAgent/model"
+	"github.com/breeswish/top-sql-playground/model"
+	"github.com/breeswish/top-sql-playground/uiserver"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -166,21 +168,23 @@ func startHttpServer(l net.Listener) error {
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	r.Use(cors.New(config))
-
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(ginzap.Ginzap(zap.L(), time.RFC3339, true))
 	r.Use(ginzap.RecoveryWithZap(zap.L(), true))
 
-	r.GET("/digests/sql", func(c *gin.Context) {
+	g := r.Group("/api")
+
+	g.GET("/digests/sql", func(c *gin.Context) {
 		digestRegistry.Lock()
 		c.JSON(http.StatusOK, digestRegistry.GetSQLMap())
 		digestRegistry.Unlock()
 	})
 
-	r.GET("/series/all", func(c *gin.Context) {
+	g.GET("/series/all", func(c *gin.Context) {
 		c.JSON(http.StatusOK, data.GetInstances())
 	})
 
-	r.GET("/series/by_instance/:instance", func(c *gin.Context) {
+	g.GET("/series/by_instance/:instance", func(c *gin.Context) {
 		instance := c.Param("instance")
 		series := data.GetDataInInstance(instance)
 
@@ -189,7 +193,11 @@ func startHttpServer(l net.Listener) error {
 		data.Unlock()
 	})
 
-	return r.RunListener(l)
+	mux := http.DefaultServeMux
+	mux.Handle("/", uiserver.Handler())
+	mux.Handle("/api/", http.HandlerFunc(r.ServeHTTP))
+	srv := &http.Server{Handler: mux}
+	return srv.Serve(l)
 }
 
 func main() {

@@ -1,7 +1,17 @@
 import axios from "axios";
 
+const baseURL = (function getApiHost(): string {
+  let apiPrefix;
+  if (process.env.NODE_ENV === "development") {
+    apiPrefix = "http://127.0.0.1:14000/api";
+  } else {
+    apiPrefix = "/api";
+  }
+  return apiPrefix;
+})();
+
 const client = axios.create({
-  baseURL: "http://127.0.0.1:14000",
+  baseURL,
 });
 
 export type GetInstanceResponse = string[];

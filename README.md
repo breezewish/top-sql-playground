@@ -1,21 +1,31 @@
 # Top SQL Playground
 
-## Start server
+## Getting Started
 
 ```shell
-go run main.go
+make ui
+UI=1 make server
+make run
 ```
 
 This will by default start multiple gRPC service endpoints so that you can point multiple TiDB instances to them.
 
-## Start frontend
+Note: This requires to have [Node.js](https://nodejs.org/en/) and [Yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable) installed.
+
+After starting the server, navigate to http://localhost:14000/
+
+## Development
+
+Start a server without UI:
+
+```shell
+make server
+make run
+```
+
+Start a UI debug server which connects to the server:
 
 ```shell
 cd ui
-yarn  # Install dependencies
 yarn start
 ```
-
-Note: This requires to have [Node.js](https://nodejs.org/en/) and [Yarn](https://classic.yarnpkg.com/en/docs/install#mac-stable) installed.
-
-After starting the server, navigate to http://localhost:3000/
